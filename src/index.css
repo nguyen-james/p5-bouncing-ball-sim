@@ -16,12 +16,12 @@ div {
 }
 
 .slider {
-  font-size: 1em;
   font-weight: 700;
   display: grid;
   grid-template-columns: 150px auto auto;
   align-items: center;
   padding: 4px;
+  text-align: left;
 }
 
 .sliderDisplay {
@@ -32,4 +32,16 @@ div {
   border-radius: 15%;
   width: 45px;
   height: 30px;
+}
+
+.checkbox {
+  text-align: left;
+  font-weight: 700;
+  padding: 4px;
+}
+
+.options-holder {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
 }

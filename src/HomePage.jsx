@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Slider from './components/slider';
+import Checkbox from './components/Checkbox';
 
 
 export default function HomePage() {
@@ -14,13 +15,13 @@ export default function HomePage() {
     <div>
         <h2> Bouncing Ball Simulator</h2>
 
-        <Slider description={"Gravity Strength:"} variable={gravity} setVariable={setGravity}/>
-        <Slider description={"Initial Ball Size:"} variable={ballSize} setVariable={setBallSize}/>
-        
-        
-
-
-        
+        <div className='options-holder'>
+            <Slider description={"Gravity Strength:"} variable={gravity} setVariable={setGravity}/>
+            <Slider description={"Initial Ball Size:"} variable={ballSize} setVariable={setBallSize}/>
+            <Checkbox description={"Give the ball a trail?"} variable={hasTrail} setVariable={setHasTrail}/>
+            <Checkbox description={"Split on bounce?"} variable={duplicate} setVariable={setDuplicate}/>
+        </div>
+           
     </div>
   )
 }
