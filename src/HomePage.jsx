@@ -15,13 +15,22 @@ export default function HomePage() {
     <div>
         <h2> Bouncing Ball Simulator</h2>
 
-        <div className='options-holder'>
             <Slider description={"Gravity Strength:"} variable={gravity} setVariable={setGravity}/>
             <Slider description={"Initial Ball Size:"} variable={ballSize} setVariable={setBallSize}/>
-            <Checkbox description={"Give the ball a trail?"} variable={hasTrail} setVariable={setHasTrail}/>
-            <Checkbox description={"Split on bounce?"} variable={duplicate} setVariable={setDuplicate}/>
-        </div>
-           
+
+            <div className='options-holder'>
+                <Checkbox description={"Give the ball a trail?"} variable={hasTrail} setVariable={setHasTrail}/>
+                <Checkbox description={"Split on bounce?"} variable={duplicate} setVariable={setDuplicate}/>
+            </div>
+            
+
+        <button
+            className='pause-button'
+            onClick={() => setPaused(prev => !prev)}
+        >
+           { paused? <i class="fa-solid fa-play"></i>: <i className="fa-solid fa-pause"></i>  }
+        </button>
+
     </div>
   )
 }

@@ -42,6 +42,17 @@ div {
 
 .options-holder {
   display: flex;
-  flex-direction: column;
-  justify-content: start;
+  flex-direction: row;
+}
+
+.pause-button {
+  width: fit-content;
+  cursor: pointer;
+  background-color: lightblue;
+  border-radius: 10%;
+  padding: 4px;
+}
+
+.pause-button:hover {
+  opacity: .8;
 }
