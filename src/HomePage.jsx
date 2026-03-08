@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import Slider from './components/slider';
 import Checkbox from './components/Checkbox';
 
-
 export default function HomePage() {
+    
+    
     const [gravity, setGravity] = useState(1);
     const [ballSize, setBallSize] = useState(10);
     const [paused, setPaused] = useState(true);
@@ -28,7 +29,7 @@ export default function HomePage() {
             className='pause-button'
             onClick={() => setPaused(prev => !prev)}
         >
-           { paused? <i class="fa-solid fa-play"></i>: <i className="fa-solid fa-pause"></i>  }
+           { paused? <i className="fa-solid fa-play"></i>: <i className="fa-solid fa-pause"></i>  }
         </button>
 
     </div>
