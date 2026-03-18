@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Slider from './components/slider';
 import Checkbox from './components/Checkbox';
+import SketchCanvas from './components/SketchCanvas';
 
 export default function HomePage() {
     
@@ -15,6 +16,14 @@ export default function HomePage() {
   return (
     <div>
         <h2> Bouncing Ball Simulator</h2>
+
+        <SketchCanvas
+          gravity={gravity}
+          ballSize={ballSize}
+          paused={paused}
+          hasTrail={hasTrail}
+          duplicate={duplicate}
+        />
 
             <Slider description={"Gravity Strength:"} variable={gravity} setVariable={setGravity}/>
             <Slider description={"Initial Ball Size:"} variable={ballSize} setVariable={setBallSize}/>

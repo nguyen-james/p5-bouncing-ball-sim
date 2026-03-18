@@ -1,61 +1,96 @@
 import p5 from "p5";
 import { ball } from "./ball";
 
-const canvasHeight = Math.min(window.innerHeight, 450);
-const canvasWidth = Math.min(400, window.innerWidth);
+export function createSketch(parentEl, paramsRef) {
+  const canvasHeight = Math.min(window.innerHeight, 450);
+  const canvasWidth = Math.min(400, window.innerWidth);
 
-let gravityConstant = 0.1;
-let circleDiameter = 10;
-let splitOnBounce = false;
-let trail = true;
-let paused = false;
-let circles = [new ball(canvasWidth/2, canvasHeight/2, circleDiameter)];
+  const outerRingDiameter = canvasWidth * 0.9;
+  const outerRingRadius = outerRingDiameter / 2;
 
+  const ringCenterX = canvasWidth / 2;
+  const ringCenterY = canvasHeight / 2;
 
-export const sketch = new p5((p) => {
-  p.setup = () => {
-    p.createCanvas(canvasWidth, canvasHeight);
-    p.background(0);
-  };
+  // Keep your existing simulation scaling similar to the old fixed `gravityConstant`.
+  const gravityScale = 0.1;
 
-  p.draw = () => {
+  function resolveOuterRingCollision(c) {
+    const r = c.diameter / 2;
+    const dx = c.x - ringCenterX;
+    const dy = c.y - ringCenterY;
+    const dist = Math.hypot(dx, dy);
 
-    //Stop drawing if paused
-    if(paused) {
-      p.noLoop();
-    } else {
-      p.loop();
+    // If the ball is completely inside the ring, no collision to resolve.
+    if (dist + r <= outerRingRadius) return;
+
+    // Collision normal (ring center -> ball center).
+    const nx = dist === 0 ? 1 : dx / dist;
+    const ny = dist === 0 ? 0 : dy / dist;
+
+    // Push the ball back inside the ring.
+    c.x = ringCenterX + nx * (outerRingRadius - r);
+    c.y = ringCenterY + ny * (outerRingRadius - r);
+
+    // Reflect velocity if moving outward along the normal.
+    const vDotN = c.velocityX * nx + c.velocityY * ny;
+    if (vDotN > 0) {
+      c.velocityX -= 2 * vDotN * nx;
+      c.velocityY -= 2 * vDotN * ny;
     }
+  }
 
-    //reset the drawing
-    if(trail) {
-      p.background(0, 20);
-    } else {
+  const sketch = (p) => {
+    let balls = [];
+    let lastBallSize = Number(paramsRef?.current?.ballSize ?? 10);
+
+    p.setup = () => {
+      p.createCanvas(canvasWidth, canvasHeight).parent(parentEl);
       p.background(0);
-    }
-     
-  
-    //Draw the outer ring
-    p.noFill();
-    p.stroke(255, 0, 0);
-    p.strokeWeight(2);
-    p.circle(canvasWidth/2, canvasHeight/2, canvasWidth * .9)
-    
-    //set up parameters for new circles
-    p.fill("blue");
-    p.noStroke();
 
-     circles.forEach( c => {
-        p.circle(
-          //Ensure Ball Stays within canvas bounds
-          c.x > canvasWidth ? canvasWidth-c.diameter/2: c.x,
-          c.y > canvasHeight ? canvasHeight-c.diameter/2: c.y,
-          c.diameter
-        );
-        c.applyGravity(gravityConstant);
-        c.updatePosition();
-    });
-    
+      balls = [new ball(ringCenterX, ringCenterY, lastBallSize)];
+    };
+
+    p.draw = () => {
+      const params = paramsRef?.current ?? {};
+      const gravity = Number(params.gravity ?? 1);
+      const ballSize = Number(params.ballSize ?? lastBallSize);
+      const paused = Boolean(params.paused);
+      const trail = Boolean(params.hasTrail);
+
+      // Resize existing balls when `ballSize` changes.
+      if (ballSize !== lastBallSize && balls.length) {
+        balls.forEach((b) => {
+          b.diameter = ballSize;
+        });
+        lastBallSize = ballSize;
+      }
+
+      // Reset the drawing.
+      if (trail) p.background(0, 20);
+      else p.background(0);
+
+      // Draw the outer ring.
+      p.noFill();
+      p.stroke(255, 0, 0);
+      p.strokeWeight(2);
+      p.circle(ringCenterX, ringCenterY, outerRingDiameter);
+
+      // Draw balls.
+      p.fill("blue");
+      p.noStroke();
+
+      balls.forEach((c) => {
+        if (!paused) {
+          c.applyGravity(gravity * gravityScale);
+          c.updatePosition();
+          resolveOuterRingCollision(c);
+        }
+
+        p.circle(c.x, c.y, c.diameter);
+      });
+    };
   };
-});
+
+  return new p5(sketch, parentEl);
+}
 
