@@ -42,6 +42,7 @@ export function createSketch(parentEl, paramsRef) {
   const sketch = (p) => {
     let balls = [];
     let lastBallSize = Number(paramsRef?.current?.ballSize ?? 10);
+    let lastResetToken = Number(paramsRef?.current?.resetToken ?? 0);
 
     p.setup = () => {
       p.createCanvas(canvasWidth, canvasHeight).parent(parentEl);
@@ -56,6 +57,14 @@ export function createSketch(parentEl, paramsRef) {
       const ballSize = Number(params.ballSize ?? lastBallSize);
       const paused = Boolean(params.paused);
       const trail = Boolean(params.hasTrail);
+      const resetToken = Number(params.resetToken ?? 0);
+
+      // React-triggered reset: rebuild the ball list from scratch.
+      if (resetToken !== lastResetToken) {
+        balls = [new ball(ringCenterX, ringCenterY, ballSize)];
+        lastBallSize = ballSize;
+        lastResetToken = resetToken;
+      }
 
       // Resize existing balls when `ballSize` changes.
       if (ballSize !== lastBallSize && balls.length) {

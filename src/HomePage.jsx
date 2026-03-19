@@ -11,6 +11,11 @@ export default function HomePage() {
     const [paused, setPaused] = useState(true);
     const [hasTrail, setHasTrail] = useState(false);
     const [duplicate, setDuplicate] = useState(false);
+    const [resetToken, setResetToken] = useState(0);
+
+    const resetBalls = () => {
+        setResetToken((t) => t + 1);
+    };
    
 
   return (
@@ -23,6 +28,7 @@ export default function HomePage() {
           paused={paused}
           hasTrail={hasTrail}
           duplicate={duplicate}
+          resetToken={resetToken}
         />
 
             <Slider description={"Gravity Strength:"} variable={gravity} setVariable={setGravity}/>
@@ -34,12 +40,22 @@ export default function HomePage() {
             </div>
             
 
-        <button
-            className='pause-button'
-            onClick={() => setPaused(prev => !prev)}
-        >
-           { paused? <i className="fa-solid fa-play"></i>: <i className="fa-solid fa-pause"></i>  }
-        </button>
+        <span>
+            <button
+                className='button'
+                onClick={() => setPaused(prev => !prev)}
+            >
+            { paused? <i className="fa-solid fa-play"></i>: <i className="fa-solid fa-pause"></i>  }
+            </button>
+
+            <button
+                className='button'
+                onClick={() => resetBalls()}
+            >
+            <i className="fa-solid fa-arrow-rotate-left"></i> 
+            </button>
+        </span>
+        
 
     </div>
   )

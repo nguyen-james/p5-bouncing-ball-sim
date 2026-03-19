@@ -7,6 +7,7 @@ export default function SketchCanvas({
   paused,
   hasTrail,
   duplicate,
+  resetToken,
 }) {
   const containerRef = useRef(null);
   const paramsRef = useRef({
@@ -15,6 +16,7 @@ export default function SketchCanvas({
     paused,
     hasTrail,
     duplicate,
+    resetToken,
   });
 
   useEffect(() => {
@@ -24,8 +26,9 @@ export default function SketchCanvas({
       paused,
       hasTrail,
       duplicate,
+      resetToken,
     };
-  }, [gravity, ballSize, paused, hasTrail, duplicate]);
+  }, [gravity, ballSize, paused, hasTrail, duplicate, resetToken]);
 
   useEffect(() => {
     if (!containerRef.current) return;
