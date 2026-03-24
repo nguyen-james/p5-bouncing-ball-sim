@@ -32,19 +32,30 @@ export default function SketchCanvas({
   }, [gravity, ballSize, paused, hasTrail, duplicate, resetToken]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
 
-    // StrictMode can mount effects twice in development.
-    // Ensure we never keep more than one canvas instance.
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Remove previous instance if one exists, then recreate.
     if (p5Ref.current) {
       p5Ref.current.remove();
       p5Ref.current = null;
     }
 
-    p5Ref.current = createSketch(containerRef.current, paramsRef);
+    // Full DOM cleanup before (re)mount.
+    container.innerHTML = "";
 
+    // Create new p5 instance.
+    p5Ref.current = createSketch(container, paramsRef);
+
+    return () => {
+      if (p5Ref.current) {
+        p5Ref.current.remove();
+        p5Ref.current = null;
+      }
+      container.innerHTML = "";
+    };
   }, []);
 
   return <div ref={containerRef} />;
 }
-
