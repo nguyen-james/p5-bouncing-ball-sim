@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Slider from './components/slider';
+import Slider from './components/Slider';
 import Checkbox from './components/Checkbox';
 import SketchCanvas from './components/SketchCanvas';
 
