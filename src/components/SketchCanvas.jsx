@@ -8,6 +8,7 @@ export default function SketchCanvas({
   hasTrail,
   duplicate,
   resetToken,
+  muted,
 }) {
   const containerRef = useRef(null);
   const p5Ref = useRef(null);
@@ -18,6 +19,7 @@ export default function SketchCanvas({
     hasTrail,
     duplicate,
     resetToken,
+    muted,
   });
 
   useEffect(() => {
@@ -28,8 +30,9 @@ export default function SketchCanvas({
       hasTrail,
       duplicate,
       resetToken,
+      muted,
     };
-  }, [gravity, ballSize, paused, hasTrail, duplicate, resetToken]);
+  }, [gravity, ballSize, paused, hasTrail, duplicate, resetToken, muted]);
 
   useEffect(() => {
 

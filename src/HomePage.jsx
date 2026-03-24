@@ -12,9 +12,14 @@ export default function HomePage() {
     const [hasTrail, setHasTrail] = useState(false);
     const [duplicate, setDuplicate] = useState(false);
     const [resetToken, setResetToken] = useState(0);
+    const [muted, setMuted] = useState(false);
 
     const resetBalls = () => {
         setResetToken((t) => t + 1);
+    };
+
+    const muteAudio = () => {
+        setMuted((prev) => !prev);
     };
    
 
@@ -29,6 +34,7 @@ export default function HomePage() {
           hasTrail={hasTrail}
           duplicate={duplicate}
           resetToken={resetToken}
+          muted={muted}
         />
 
             <Slider description={"Gravity Strength:"} variable={gravity} setVariable={setGravity}/>
@@ -53,6 +59,13 @@ export default function HomePage() {
                 onClick={() => resetBalls()}
             >
             <i className="fa-solid fa-arrow-rotate-left"></i> 
+            </button>
+
+            <button
+                className='button'
+                onClick={() => muteAudio()}
+            >
+            <i className={`fa-solid ${muted ? "fa-volume-xmark" : "fa-volume-high"}`}></i>
             </button>
         </span>
         

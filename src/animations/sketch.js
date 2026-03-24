@@ -1,7 +1,7 @@
 import p5 from "p5";
 import { ball } from "./ball";
 import { resolveBallBallCollision, resolveOuterRingCollision } from "./collisionHandler";
-import { initBounceAudio, playBounceSound } from "./bounceAudio";
+import { initBounceAudio, playBounceSound, setBounceAudioMuted } from "./bounceAudio";
 
 
 
@@ -13,6 +13,7 @@ export function createSketch(parentEl, paramsRef) {
   const sketch = (p) => {
     let balls = [];
     let lastBallSize = Number(paramsRef?.current?.ballSize ?? 10);
+    let lastMuted = Boolean(paramsRef?.current?.muted ?? false);
     let currentRadius = lastBallSize / 2;
     let lastResetToken = Number(paramsRef?.current?.resetToken ?? 0);
     let canvasPointerHandler = null;
@@ -73,7 +74,13 @@ export function createSketch(parentEl, paramsRef) {
       const paused = Boolean(params.paused);
       const trail = Boolean(params.hasTrail);
       const duplicate = Boolean(params.duplicate);
+      const muted = Boolean(params.muted);
       const resetToken = Number(params.resetToken ?? 0);
+
+      if (muted !== lastMuted) {
+        setBounceAudioMuted(muted);
+        lastMuted = muted;
+      }
 
       if (resetToken !== lastResetToken) {
         balls = [new ball(ringCenterX, ringCenterY, ballSize)];

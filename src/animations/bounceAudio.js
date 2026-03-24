@@ -1,5 +1,6 @@
 const BOUNCE_SOUND_PATHS = ["/bounce-1.wav", "/bounce-2.wav", "/bounce-3.wav"];
 const DEFAULT_VOLUME = 0.35;
+let isMuted = false;
 
 let clipCache = null;
 const activeSounds = new Set();
@@ -17,7 +18,12 @@ function getClips() {
   return clipCache;
 }
 
+export function initBounceAudio() {
+  getClips();
+}
+
 export function playBounceSound() {
+  if (isMuted) return;
   const clips = getClips();
   if (!clips.length) return;
 
@@ -39,4 +45,8 @@ export function playBounceSound() {
   if (playResult && typeof playResult.catch === "function") {
     playResult.catch(cleanup);
   }
+}
+
+export function setBounceAudioMuted(nextMuted) {
+  isMuted = Boolean(nextMuted);
 }
