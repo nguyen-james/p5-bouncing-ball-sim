@@ -1,16 +1,63 @@
-# React + Vite
+# Bouncing Ball Simulation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple interactive bouncing ball simulation inspired by Instagram reels, built using **p5.js** and **React**.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+* **Play / Pause Simulation**
+  Start or stop the animation at any time.
 
-## React Compiler
+* **Sound Toggle**
+  Enable or mute bounce sound effects.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **Adjustable Settings**
 
-## Expanding the ESLint configuration
+  * Ball size
+  * Gravity strength
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* **Toggle Options**
+
+  * Enable/disable ball trails
+  * Enable/disable ball splitting on collision
+
+* **Interactive Canvas**
+
+  * Click anywhere on the canvas to spawn a new ball at that location
+
+## Tech Stack
+
+* **React** – UI and state management
+* **p5.js** – Canvas rendering and animation
+
+## How It Works
+
+Each ball is affected by gravity and bounces off the edges of the canvas or other balls. Depending on your settings:
+
+* Balls can leave visual trails behind them
+* Balls can split into multiple balls upon collision
+* Sound effects can play on impact
+
+## Getting Started
+
+1. Clone the repository:
+
+   ```bash
+   git clone <your-repo-url>
+   cd <your-project-folder>
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Run the app:
+
+   ```bash
+   npm run dev
+   ```
+
+
+## Check out the current build here
+* insert link later
