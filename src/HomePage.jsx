@@ -5,7 +5,6 @@ import SketchCanvas from './components/SketchCanvas';
 
 export default function HomePage() {
     
-    
     const [gravity, setGravity] = useState(1);
     const [ballSize, setBallSize] = useState(10);
     const [paused, setPaused] = useState(true);
@@ -14,6 +13,9 @@ export default function HomePage() {
     const [resetToken, setResetToken] = useState(0);
     const [muted, setMuted] = useState(false);
 
+    const pause = () => {
+        setPaused(prev => !prev);
+    }
     const resetBalls = () => {
         setResetToken((t) => t + 1);
     };
@@ -49,7 +51,7 @@ export default function HomePage() {
         <span>
             <button
                 className='button'
-                onClick={() => setPaused(prev => !prev)}
+                onClick={() => pause()}
             >
             { paused? <i className="fa-solid fa-play"></i>: <i className="fa-solid fa-pause"></i>  }
             </button>
@@ -67,8 +69,7 @@ export default function HomePage() {
             >
             <i className={`fa-solid ${muted ? "fa-volume-xmark" : "fa-volume-high"}`}></i>
             </button>
-        </span>
-        
+        </span> 
 
     </div>
   )

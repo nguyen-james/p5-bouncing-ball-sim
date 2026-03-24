@@ -1,3 +1,7 @@
+
+//Fixed epsilon
+const epsilon = 0.03;
+
 export function resolveOuterRingCollision(ball, outerRingRadius, ringCenterX, ringCenterY) {
   const radius = ball.diameter / 2;
   const dx = ball.x - ringCenterX;
@@ -11,7 +15,6 @@ export function resolveOuterRingCollision(ball, outerRingRadius, ringCenterX, ri
   const ny = dist === 0 ? 0 : dy / dist;
 
   // Pull center back exactly to boundary (minus tiny epsilon to avoid re-hit jitter).
-  const epsilon = 0.01;
   const targetDist = outerRingRadius - radius - epsilon;
   ball.x = ringCenterX + nx * targetDist;
   ball.y = ringCenterY + ny * targetDist;
@@ -51,7 +54,6 @@ export function resolveBallBallCollision(ballA, ballB) {
 
   // Strong positional correction so circles never remain overlapped.
   const overlap = minDist - dist;
-  const epsilon = 0.03;
   const separation = overlap + epsilon;
   ballA.x -= nx * (separation / 2);
   ballA.y -= ny * (separation / 2);

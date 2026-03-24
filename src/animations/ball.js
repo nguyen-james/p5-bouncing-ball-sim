@@ -1,4 +1,6 @@
 export class ball {
+    
+    // Coordinate Position (x, y), diameter of the ball
     constructor(x, y, diameter) {
         this.x = x;
         this.y = y;
