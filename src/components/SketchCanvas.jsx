@@ -10,6 +10,7 @@ export default function SketchCanvas({
   resetToken,
 }) {
   const containerRef = useRef(null);
+  const p5Ref = useRef(null);
   const paramsRef = useRef({
     gravity,
     ballSize,
@@ -33,10 +34,15 @@ export default function SketchCanvas({
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const p5Instance = createSketch(containerRef.current, paramsRef);
-    return () => {
-      p5Instance.remove();
-    };
+    // StrictMode can mount effects twice in development.
+    // Ensure we never keep more than one canvas instance.
+    if (p5Ref.current) {
+      p5Ref.current.remove();
+      p5Ref.current = null;
+    }
+
+    p5Ref.current = createSketch(containerRef.current, paramsRef);
+
   }, []);
 
   return <div ref={containerRef} />;

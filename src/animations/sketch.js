@@ -1,7 +1,10 @@
 import p5 from "p5";
 import { ball } from "./ball";
+import { resolveBallBallCollision, resolveOuterRingCollision } from "./collisionHandler";
+
 
 export function createSketch(parentEl, paramsRef) {
+
   const canvasHeight = Math.min(window.innerHeight, 450);
   const canvasWidth = Math.min(400, window.innerWidth);
 
@@ -11,33 +14,12 @@ export function createSketch(parentEl, paramsRef) {
   const ringCenterX = canvasWidth / 2;
   const ringCenterY = canvasHeight / 2;
 
+  const MAX_BALLS = 80;
+
   // Keep your existing simulation scaling similar to the old fixed `gravityConstant`.
   const gravityScale = 0.1;
 
-  function resolveOuterRingCollision(c) {
-    const r = c.diameter / 2;
-    const dx = c.x - ringCenterX;
-    const dy = c.y - ringCenterY;
-    const dist = Math.hypot(dx, dy);
-
-    // If the ball is completely inside the ring, no collision to resolve.
-    if (dist + r <= outerRingRadius) return;
-
-    // Collision normal (ring center -> ball center).
-    const nx = dist === 0 ? 1 : dx / dist;
-    const ny = dist === 0 ? 0 : dy / dist;
-
-    // Push the ball back inside the ring.
-    c.x = ringCenterX + nx * (outerRingRadius - r);
-    c.y = ringCenterY + ny * (outerRingRadius - r);
-
-    // Reflect velocity if moving outward along the normal.
-    const vDotN = c.velocityX * nx + c.velocityY * ny;
-    if (vDotN > 0) {
-      c.velocityX -= 2 * vDotN * nx;
-      c.velocityY -= 2 * vDotN * ny;
-    }
-  }
+  
 
   const sketch = (p) => {
     let balls = [];
@@ -57,6 +39,7 @@ export function createSketch(parentEl, paramsRef) {
       const ballSize = Number(params.ballSize ?? lastBallSize);
       const paused = Boolean(params.paused);
       const trail = Boolean(params.hasTrail);
+      const duplicate = Boolean(params.duplicate);
       const resetToken = Number(params.resetToken ?? 0);
 
       // React-triggered reset: rebuild the ball list from scratch.
@@ -88,13 +71,72 @@ export function createSketch(parentEl, paramsRef) {
       p.fill("blue");
       p.noStroke();
 
-      balls.forEach((c) => {
-        if (!paused) {
+      const pendingBalls = [];
+
+      if (!paused) {
+        // Integrate motion.
+        balls.forEach((c) => {
           c.applyGravity(gravity * gravityScale);
           c.updatePosition();
-          resolveOuterRingCollision(c);
-        }
+        });
 
+        // Outer ring collisions + optional duplication.
+        balls.forEach((c) => {
+          const ring = resolveOuterRingCollision(
+            c,
+            outerRingRadius,
+            ringCenterX,
+            ringCenterY
+          );
+          if (
+            duplicate &&
+            ring.didCollide &&
+            balls.length + pendingBalls.length < MAX_BALLS
+          ) {
+            const b = new ball(c.x, c.y, c.diameter);
+            // Spawn with a velocity slightly nudged along the collision normal.
+            b.updateVelocity(
+              (c.velocityX + ring.nx * 0.5),
+              (c.velocityY + ring.ny * 0.5)
+            );
+            pendingBalls.push(b);
+          }
+        });
+
+        // Ball-ball collisions + optional duplication.
+        for (let i = 0; i < balls.length; i++) {
+          for (let j = i + 1; j < balls.length; j++) {
+            const a = balls[i];
+            const b = balls[j];
+            const res = resolveBallBallCollision(a, b);
+
+            if (
+              duplicate &&
+              res.didBounce &&
+              balls.length + pendingBalls.length < MAX_BALLS
+            ) {
+              const mx = (a.x + b.x) / 2;
+              const my = (a.y + b.y) / 2;
+              const spawnX = mx + res.nx * (a.diameter / 4);
+              const spawnY = my + res.ny * (a.diameter / 4);
+
+              const child = new ball(spawnX, spawnY, a.diameter);
+              child.updateVelocity(
+                (a.velocityX + b.velocityX) / 2 + res.nx * 0.5,
+                (a.velocityY + b.velocityY) / 2 + res.ny * 0.5
+              );
+              pendingBalls.push(child);
+            }
+          }
+        }
+      }
+
+      if (pendingBalls.length) {
+        balls = balls.concat(pendingBalls);
+      }
+
+      // Draw after physics/collisions.
+      balls.forEach((c) => {
         p.circle(c.x, c.y, c.diameter);
       });
     };
