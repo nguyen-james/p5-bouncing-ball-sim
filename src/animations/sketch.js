@@ -2,38 +2,19 @@ import p5 from "p5";
 import { ball } from "./ball";
 import { resolveBallBallCollision, resolveOuterRingCollision } from "./collisionHandler";
 
-const GLOBAL_P5_KEY = "__bouncing_ball_active_p5__";
-
-function getActiveP5() {
-  return globalThis[GLOBAL_P5_KEY] ?? null;
-}
-
-function setActiveP5(instance) {
-  globalThis[GLOBAL_P5_KEY] = instance;
-}
 
 
 export function createSketch(parentEl, paramsRef) {
-  if (parentEl) {
-    // Remove stale canvases that may survive Fast Refresh / StrictMode remount cycles.
-    const stale = parentEl.querySelectorAll("canvas.p5Canvas, canvas[id^='defaultCanvas']");
-    stale.forEach((node) => node.remove());
-  }
-
-  // Enforce exactly one live p5 instance globally.
-  const existing = getActiveP5();
-  if (existing) {
-    existing.remove();
-    setActiveP5(null);
-  }
-
+  
   const MAX_BALLS = 80;
   const gravityScale = 0.1;
 
   const sketch = (p) => {
     let balls = [];
     let lastBallSize = Number(paramsRef?.current?.ballSize ?? 10);
+    let currentRadius = lastBallSize / 2;
     let lastResetToken = Number(paramsRef?.current?.resetToken ?? 0);
+    let canvasPointerHandler = null;
 
     let canvasWidth = 0;
     let canvasHeight = 0;
@@ -51,11 +32,31 @@ export function createSketch(parentEl, paramsRef) {
       ringCenterY = canvasHeight / 2;
     }
 
+    function addBallAt(clientX, clientY, canvasEl) {
+      const rect = canvasEl.getBoundingClientRect();
+      const x = (clientX - rect.left) * (canvasWidth / rect.width);
+      const y = (clientY - rect.top) * (canvasHeight / rect.height);
+
+      if (x < 0 || x > canvasWidth || y < 0 || y > canvasHeight) return;
+      if (balls.length >= MAX_BALLS) return;
+
+      balls.push(new ball(x, y, currentRadius * 2));
+    }
+
     p.setup = () => {
       updateDimensions();
-      p.createCanvas(canvasWidth, canvasHeight).parent(parentEl);
+      const canvas = p.createCanvas(canvasWidth, canvasHeight);
+      canvas.parent(parentEl);
       p.background(0);
       balls = [new ball(ringCenterX, ringCenterY, lastBallSize)];
+
+      canvasPointerHandler = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        addBallAt(event.clientX, event.clientY, canvas.elt);
+      };
+
+      canvas.elt.addEventListener("pointerdown", canvasPointerHandler);
     };
 
     p.windowResized = () => {
@@ -83,6 +84,7 @@ export function createSketch(parentEl, paramsRef) {
           b.diameter = ballSize;
         });
         lastBallSize = ballSize;
+        currentRadius = ballSize / 2;
       }
 
       if (trail) p.background(0, 20);
@@ -161,6 +163,13 @@ export function createSketch(parentEl, paramsRef) {
         p.circle(c.x, c.y, c.diameter);
       });
     };
+
+    p.remove = ((originalRemove) => () => {
+      if (canvasPointerHandler && p.canvas) {
+        p.canvas.removeEventListener("pointerdown", canvasPointerHandler);
+      }
+      originalRemove.call(p);
+    })(p.remove);
   };
 
   const next = new p5(sketch, parentEl);
