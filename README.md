@@ -42,7 +42,7 @@ Each ball is affected by gravity and bounces off the edges of the canvas or othe
 1. Clone the repository:
 
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/nguyen-james/p5-bouncing-ball-sim.git
    cd <your-project-folder>
    ```
 
@@ -60,4 +60,4 @@ Each ball is affected by gravity and bounces off the edges of the canvas or othe
 
 
 ## Check out the current build here
-* insert link later
+* https://p5-bouncing-ball-9gv4hwv9e-james-nguyens-projects-40873512.vercel.app/
