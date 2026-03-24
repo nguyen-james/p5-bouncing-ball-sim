@@ -1,6 +1,7 @@
 import p5 from "p5";
 import { ball } from "./ball";
 import { resolveBallBallCollision, resolveOuterRingCollision } from "./collisionHandler";
+import { initBounceAudio, playBounceSound } from "./bounceAudio";
 
 
 
@@ -53,6 +54,7 @@ export function createSketch(parentEl, paramsRef) {
       canvasPointerHandler = (event) => {
         event.preventDefault();
         event.stopPropagation();
+        void initBounceAudio();
         addBallAt(event.clientX, event.clientY, canvas.elt);
       };
 
@@ -114,6 +116,10 @@ export function createSketch(parentEl, paramsRef) {
             ringCenterY
           );
 
+          if (ring.didBounce) {
+            playBounceSound();
+          }
+
           if (
             duplicate &&
             ring.didCollide &&
@@ -133,6 +139,10 @@ export function createSketch(parentEl, paramsRef) {
             const a = balls[i];
             const b = balls[j];
             const res = resolveBallBallCollision(a, b);
+
+            if (res.didBounce) {
+              playBounceSound();
+            }
 
             if (
               duplicate &&
@@ -173,6 +183,5 @@ export function createSketch(parentEl, paramsRef) {
   };
 
   const next = new p5(sketch, parentEl);
-  setActiveP5(next);
   return next;
 }
