@@ -46,10 +46,12 @@ export function createSketch(parentEl, paramsRef) {
     }
 
     p.setup = () => {
+      p.pixelDensity(1)
       updateDimensions();
       const canvas = p.createCanvas(canvasWidth, canvasHeight);
       canvas.parent(parentEl);
       p.background(0);
+      
       balls = [new ball(ringCenterX, ringCenterY, lastBallSize)];
 
       canvasPointerHandler = (event) => {
